@@ -32,14 +32,22 @@ int main(int argc, char* argv[]) {
     // Preenchendo as matrizes A e B
     load_matrix(matrixA, file_matrix_A);
     load_matrix(matrixB, file_matrix_B);
+    
+    // Multiplicação por escalar
+    scalar_matrix_mult(scalar, matrixA);
+    load_matrix(matrixC, file_result2);
 
+    // Multiplicação de matrizes
+    matrix_matrix_mult(matrixA, matrixB, matrixC);
+    load_matrix(matrixC, file_result2);
+    
     // Fechando arquivos
     fclose(file_matrix_A);
     fclose(file_matrix_B);
     fclose(file_result1);
     fclose(file_result2);
 
-   return 0;
+    return 0;
 }
 
 /*
@@ -74,8 +82,9 @@ int load_matrix(struct matrix* matrix, FILE* file) {
 /*
     Guarda os valores da matriz em um arquivo binário
 */
-int store_matrix(struct matrix* matrix, FILE* filename) {
+int store_matrix(struct matrix* matrix, FILE* file) {
 
+    fwrite(matrix->rows, sizeof(float), matrix->height * matrix->width, file)
     return 1;
 }
 
@@ -85,8 +94,10 @@ int store_matrix(struct matrix* matrix, FILE* filename) {
 */
 int display_matrix(struct matrix* matrix) {
 
+    for (int i = 0; i < matrix->height * matrix->rows; i++) printf("%f", matrix->rows[i];
     return 1;
 }
+
 
 /*
     Função utilizada apenas para a matriz C
