@@ -1,4 +1,4 @@
-#include <stdio.h>
+# include <stdio.h>
 
 struct matrix {
     unsigned long int height;
