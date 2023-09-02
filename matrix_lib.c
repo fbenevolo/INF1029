@@ -1,9 +1,4 @@
-struct matrix {
-    unsigned long int height;
-    unsigned long int width;
-    float *rows;
-};
-
+# include "matrix_lib.h"
 
 // Qual seria um caso de erro?
 int scalar_matrix_mult(float scalar_value, struct matrix *matrix){
