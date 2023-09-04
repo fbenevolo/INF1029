@@ -1,4 +1,5 @@
-# include "matrix_lib.h"
+#include "matrix_lib.h"
+#include <stdio.h>
 
 // Qual seria um caso de erro?
 int scalar_matrix_mult(float scalar_value, struct matrix *matrix){
@@ -39,7 +40,6 @@ int matrix_matrix_mult_opt(struct matrix* matrixA, struct matrix* matrixB, struc
             printf("%d and %d and %d\n", i/matrixA->width, j, (i / matrixA->width) + j);
             matrixC->rows[(i / matrixA->width)*(matrixC->width) + j] += matrixA->rows[i] * matrixB->rows[(i % matrixA->width) *(matrixB->width) + j];
         }
-        print_matrix(matrixC);
     }
 
     return 1;
