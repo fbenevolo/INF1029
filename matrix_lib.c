@@ -1,4 +1,5 @@
-# include "matrix_lib.h"
+#include "matrix_lib.h"
+#include <stdlib.h>
 
 // Qual seria um caso de erro?
 int scalar_matrix_mult(float scalar_value, struct matrix *matrix){
@@ -33,21 +34,40 @@ int matrix_matrix_mult_opt(struct matrix* matrixA, struct matrix* matrixB, struc
         return 0;
     }
 
-    for (unsigned long int i = 0;i < (matrixA->height) * (matrixA->width);i++) {
-        
+    unsigned long int num_elements_A = (matrixA->height) * (matrixA->width);
+    unsigned long int current_element_B;
+    unsigned long int current_element_C;
+
+    for (unsigned long int i = 0;i < num_elements_A;i++) {
+        current_element_B = (i % matrixA->width) *(matrixB->width);
+        current_element_C = (i / matrixA->width)*(matrixC->width);
         for (unsigned long int j = 0;j < matrixB->width;j++) {
-            printf("%d and %d and %d\n", i/matrixA->width, j, (i / matrixA->width) + j);
-            matrixC->rows[(i / matrixA->width)*(matrixC->width) + j] += matrixA->rows[i] * matrixB->rows[(i % matrixA->width) *(matrixB->width) + j];
+            matrixC->rows[current_element_C+j] += matrixA->rows[i] * matrixB->rows[current_element_B+j];
         }
-        print_matrix(matrixC);
     }
 
     return 1;
 
 }
 
-void inicializa_linha(struct matrix *matrix, int height){
-    for(int i=0;i<matrix->width;i++){
+int is_matrix_valid(struct matrix* matrix){
+    if(matrix==NULL || matrix->height<=0 || matrix->width<=0){
+        return 0;
+    }
+    return 1;
+}
+
+int is_matrix_mult_valid(struct matrix* matrixA, struct matrix* matrixB){
+    if(is_matrix_valid(matrixA) && is_matrix_valid(matrixB)){
+        if(matrixA->width == matrixB->height){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void initialize_row(struct matrix *matrix, int height){
+    for(unsigned long int i=0;i<matrix->width;i++){
         matrix->rows[height*matrix->width + i] = 0;
     }
     return;
