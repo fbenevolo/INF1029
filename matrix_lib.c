@@ -1,5 +1,5 @@
 #include "matrix_lib.h"
-#include <stdio.h>
+#include <stdlib.h>
 
 // Qual seria um caso de erro?
 int scalar_matrix_mult(float scalar_value, struct matrix *matrix){
@@ -67,7 +67,7 @@ int is_matrix_mult_valid(struct matrix* matrixA, struct matrix* matrixB){
 }
 
 void initialize_row(struct matrix *matrix, int height){
-    for(int i=0;i<matrix->width;i++){
+    for(unsigned long int i=0;i<matrix->width;i++){
         matrix->rows[height*matrix->width + i] = 0;
     }
     return;
