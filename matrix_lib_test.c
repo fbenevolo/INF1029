@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include "matrix_lib.h"
 #include "timer.h"
+#define MAX_DISPLAY 256
 
 // Cabeçalhos
 int load_matrix(struct matrix* matrix, FILE* file);
@@ -18,7 +19,10 @@ int main(int argc, char* argv[]) {
     float scalar = atof(argv[1]);
     struct matrix * matrixA, * matrixB, * matrixC;
     FILE* file_matrix_A, * file_matrix_B, * file_result1, * file_result2; 
-    struct timeval start, stop; 
+    struct timeval start, stop, start_program, stop_program;
+
+    // Iniciando o tempo do programa
+    gettimeofday(&start_program, NULL); 
 
     // Abrindo arquivos
     file_matrix_A = fopen(argv[6], "rb");
@@ -36,21 +40,34 @@ int main(int argc, char* argv[]) {
     load_matrix(matrixA, file_matrix_A);
     load_matrix(matrixB, file_matrix_B);
     
-    // Multiplicação por escalar
-    scalar_matrix_mult(scalar, matrixA);
-    store_matrix(matrixA, file_result1);
-    //display_matrix(matrixA);
-
-    // Start da multiplicação
+    // Start da multiplicação por um escalar 
     gettimeofday(&start, NULL);
 
-    // Multiplicação de matrizes
+    // Multiplicação por escalar
+    scalar_matrix_mult(scalar, matrixA);
+    gettimeofday(&stop, NULL); // Stop da multiplicação por escalar
+    store_matrix(matrixA, file_result1);
+    display_matrix(matrixA);
+    
+    printf("Overall time scalar matrix mult: %f ms\n\n", timedifference_msec(start, stop));
+
+    // Multiplicação de matrizes NÃO OTIMIZADO
+    gettimeofday(&start, NULL);
     matrix_matrix_mult(matrixA, matrixB, matrixC);
     gettimeofday(&stop, NULL); // Stop da multiplicação
     store_matrix(matrixC, file_result2);
     display_matrix(matrixC);
 
-    printf("Overall time: %f ms\n", timedifference_msec(start, stop));
+    printf("Overall time matrix matrix mult non-optimized: %f ms\n", timedifference_msec(start, stop));
+
+    // Multiplicação de matrizes OTIMIZADO
+    gettimeofday(&start, NULL);
+    matrix_matrix_mult_opt(matrixA, matrixB, matrixC);
+    gettimeofday(&stop, NULL);
+    display_matrix(matrixC);
+
+    printf("Overall time matrix matrix mult optimized: %f ms\n", timedifference_msec(start, stop));
+
 
     // Fechando arquivos
     fclose(file_matrix_A);
@@ -58,6 +75,11 @@ int main(int argc, char* argv[]) {
     fclose(file_result1);
     fclose(file_result2);
     
+
+    gettimeofday(&stop_program, NULL);
+
+    printf("\nOverall time of program: %f ms\n", timedifference_msec(start_program, stop_program));
+
     return 0;
 }
 
@@ -113,7 +135,7 @@ int store_matrix(struct matrix* matrix, FILE* file) {
 */
 int display_matrix(struct matrix* matrix) {
 
-    for (int i = 0; i < matrix->height * matrix->width; i++) printf("%f  ", matrix->rows[i]);
+    for (int i = 0; i < MAX_DISPLAY; i++) printf("%f ", matrix->rows[i]);
     printf("\n\n\n");
     return 1;
 }
