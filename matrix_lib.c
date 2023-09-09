@@ -63,14 +63,13 @@ int matrix_matrix_mult_opt(struct matrix* matrixA, struct matrix* matrixB, struc
 
     unsigned long int num_elements_A = (matrixA->height) * (matrixA->width);
     unsigned long int current_element_B;
-    unsigned long int current_element_C=0;
+    unsigned long int current_element_C;
 
-    initialize_row(matrixC, current_element_C / matrixC->width);
     for (unsigned long int i = 0;i < num_elements_A;i++) {
         current_element_B = (i % matrixA->width) * (matrixB->width);
         current_element_C = (i / matrixA->width) * (matrixC->width);
-        if (current_element_C != 0 && matrixC->width % current_element_C == 0) {
-            initialize_row(matrixC, (current_element_C / matrixC->width)+1);
+        if (i % matrixA->width == 0) {
+            initialize_row(matrixC, (current_element_C / matrixC->width));
         }
         for (unsigned long int j = 0;j < matrixB->width;j++) {
             matrixC->rows[current_element_C + j] += matrixA->rows[i] * matrixB->rows[current_element_B + j];
@@ -80,6 +79,5 @@ int matrix_matrix_mult_opt(struct matrix* matrixA, struct matrix* matrixB, struc
     return 1;
 
 }
-
 
 
