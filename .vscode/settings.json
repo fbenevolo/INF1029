@@ -2,5 +2,6 @@
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "matrix_lib.h": "c"
-    }
+    },
+    "cmake.configureOnOpen": false
 }
