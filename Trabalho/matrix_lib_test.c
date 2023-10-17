@@ -18,17 +18,20 @@ int main(int argc, char* argv[]) {
     // Declaração de variáveis
     float scalar = atof(argv[1]);
     struct matrix * matrixA, * matrixB, * matrixC;
-    FILE* file_matrix_A, * file_matrix_B, * file_result1, * file_result2; 
     struct timeval start, stop, start_program, stop_program;
+    FILE* file_matrix_A, * file_matrix_B, * file_result1, * file_result2; 
+
+    // definindo número de threads
+    set_number_threads(atoi(argv[6]));
 
     // Iniciando o tempo do programa
     gettimeofday(&start_program, NULL); 
 
     // Abrindo arquivos
-    file_matrix_A = fopen(argv[6], "rb");
-    file_matrix_B = fopen(argv[7], "rb");
-    file_result1  = fopen(argv[8], "wb");
-    file_result2  = fopen(argv[9], "wb");
+    file_matrix_A = fopen(argv[7], "rb");
+    file_matrix_B = fopen(argv[8], "rb");
+    file_result1  = fopen(argv[9], "wb");
+    file_result2  = fopen(argv[10], "wb");
 
     // Inicializando matrizes A e B 
     matrixA = inicialize_matrix(atoi(argv[2]), atoi(argv[3]));
@@ -49,7 +52,7 @@ int main(int argc, char* argv[]) {
     store_matrix(matrixA, file_result1);
     display_matrix(matrixA);
     
-    printf("Overall time scalar matrix mult: %f ms\n\n", timedifference_msec(start, stop));
+    printf("Overall time scalar matrix mult: %f ms\n\n\n", timedifference_msec(start, stop));
 
     // Multiplicação de matrizes NÃO OTIMIZADO
     gettimeofday(&start, NULL);
@@ -58,7 +61,7 @@ int main(int argc, char* argv[]) {
     store_matrix(matrixC, file_result2);
     display_matrix(matrixC);
 
-    printf("Overall time matrix matrix mult non-optimized: %f ms\n", timedifference_msec(start, stop));
+    printf("Overall time matrix matrix mult non-optimized: %f ms\n\n\n", timedifference_msec(start, stop));
 
     // Multiplicação de matrizes OTIMIZADO
     gettimeofday(&start, NULL);
