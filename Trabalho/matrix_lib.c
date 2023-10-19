@@ -77,6 +77,7 @@ void* matrixMatrixMultThread(void* threadarg) {
             _mm256_store_ps(vecCNext, vecRes);
         }
     }
+    pthread_exit(NULL);
 
 }
 
