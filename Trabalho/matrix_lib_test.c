@@ -26,16 +26,23 @@ int main(int argc, char* argv[]) {
     gettimeofday(&start_program, NULL); 
 
      // definindo número de threads
+     // número de threads é passado no argumento argv[6]
+    int received_number_threads;
     if(argc == NUM_ARGS - 1){
+        received_number_threads = 0;
         set_number_threads(1);
     }
-    set_number_threads(atoi(argv[NUM_ARGS-1]));
+    else{
+        received_number_threads = 1;
+        set_number_threads(atoi(argv[6]));
+    }
+
 
     // Abrindo arquivos
-    file_matrix_A = fopen(argv[6], "rb");
-    file_matrix_B = fopen(argv[7], "rb");
-    file_result1  = fopen(argv[8], "wb");
-    file_result2  = fopen(argv[9], "wb");
+    file_matrix_A = fopen(argv[6+received_number_threads], "rb");
+    file_matrix_B = fopen(argv[7+received_number_threads], "rb");
+    file_result1  = fopen(argv[8+received_number_threads], "wb");
+    file_result2  = fopen(argv[9+received_number_threads], "wb");
 
     // Inicializando matrizes A e B 
     matrixA = inicialize_matrix(atoi(argv[2]), atoi(argv[3]));
