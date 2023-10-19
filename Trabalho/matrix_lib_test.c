@@ -4,6 +4,7 @@
 #include "matrix_lib.h"
 #include "timer.h"
 #define MAX_DISPLAY 256
+#define NUM_ARGS 11
 
 // Cabeçalhos
 int load_matrix(struct matrix* matrix, FILE* file);
@@ -21,17 +22,20 @@ int main(int argc, char* argv[]) {
     struct timeval start, stop, start_program, stop_program;
     FILE* file_matrix_A, * file_matrix_B, * file_result1, * file_result2; 
 
-    // definindo número de threads
-    set_number_threads(atoi(argv[6]));
-
     // Iniciando o tempo do programa
     gettimeofday(&start_program, NULL); 
 
+     // definindo número de threads
+    if(argc == NUM_ARGS - 1){
+        set_number_threads(1);
+    }
+    set_number_threads(atoi(argv[NUM_ARGS-1]));
+
     // Abrindo arquivos
-    file_matrix_A = fopen(argv[7], "rb");
-    file_matrix_B = fopen(argv[8], "rb");
-    file_result1  = fopen(argv[9], "wb");
-    file_result2  = fopen(argv[10], "wb");
+    file_matrix_A = fopen(argv[6], "rb");
+    file_matrix_B = fopen(argv[7], "rb");
+    file_result1  = fopen(argv[8], "wb");
+    file_result2  = fopen(argv[9], "wb");
 
     // Inicializando matrizes A e B 
     matrixA = inicialize_matrix(atoi(argv[2]), atoi(argv[3]));
