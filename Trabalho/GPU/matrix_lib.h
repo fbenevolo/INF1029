@@ -13,6 +13,11 @@ struct matrix {
     int alloc_mode;
 };
 
+
+void set_device_size(int device_size);
+
+int is_matrix_valid(struct matrix* matrix);
+
 int set_grid_size(int threads_per_block, int max_blocks_per_grid);
 
 int scalar_matrix_mult_gpu(float scalar_value, struct matrix *matrix);
