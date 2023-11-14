@@ -106,7 +106,7 @@ void multiply_rows_by_rows(int n, float* d_rows_a, float* d_rows_b, float* d_row
     int stride = blockDim.x * gridDim.x;
 
     for (int i = index; i < n; i += stride) {
-        for (int j = 0; j < wB; j++) {
+        for (int j = 0; j < wA; j++) {
             d_rows_c[i] += d_rows_a[wA*(i/hA) + j] * d_rows_b[(i%hA) + j*wB];
         }
         
