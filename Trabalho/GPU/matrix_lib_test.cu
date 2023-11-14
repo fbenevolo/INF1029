@@ -21,7 +21,8 @@ int display_matrix(struct matrix* matrix);
 
 int main(int argc, char* argv[]) {
 
-    int scalar, device_max_size,
+    float scalar;
+    int device_max_size,
         wA, hA, wB, hB, wC, hC,
         min_alloc, max_alloc, bool_alloc;
     struct matrix* matrixA, * matrixB, * matrixC;
@@ -61,25 +62,23 @@ int main(int argc, char* argv[]) {
 
     // Defining device maximum size
     device_max_size  = atoi(argv[6+received_gpu_info]) * MiB;
-    set_device_size(device_max_size);
-
-    //printf("min - %d\n", min_alloc);
-    //printf("device - %d\n", device_max_size);
 
     // Check if devide allows allocation of matrixes
     // Full allocation
     if (device_max_size >= max_alloc) {
-        //printf("Full alocation\n");
+        printf("Could do full alocation - device memory admits full"
+        " matrixes A, B and C\n\n");
         bool_alloc = FULL_ALLOC;
     }
     // Partial allocation
     else if (device_max_size >= min_alloc) {
-        //printf("Partial alocation\n");
+        printf("Could only do partial alocation - device memory admits only"
+        " one line of A, one line of C and full B\n\n");
         bool_alloc = PARTIAL_ALLOC;
     }
     // Can't do partial allocation
     else  {
-        perror("Can't do minimum allocation on GPU device\n");
+        perror("Can't do minimum allocation on GPU device\n\n");
         exit(3);
     }
 
@@ -98,13 +97,24 @@ int main(int argc, char* argv[]) {
     load_matrix(matrixA, file_matrix_A);
     load_matrix(matrixB, file_matrix_B);
 
+    // starting scalar matrix mult
+    gettimeofday(&start, NULL);
     scalar_matrix_mult_gpu(scalar, matrixA);
+    gettimeofday(&stop, NULL);
 
-    //display_matrix(matrixA);
-    //display_matrix(matrixB);
-    //display_matrix(matrixC);
+    display_matrix(matrixA);
 
+    printf("Scalar matrix mult: %f msec\n\n", timedifference_msec(start, stop));
 
+    // starting matrix matrix mult
+    gettimeofday(&start, NULL);
+    matrix_matrix_mult_gpu(matrixA, matrixB, matrixC);
+    gettimeofday(&stop, NULL);
+
+    display_matrix(matrixC);
+
+    printf("Matrix matrix mult: %f msec\n\n", timedifference_msec(start, stop));
+    
     // Closing files
     fclose(file_matrix_A);
     fclose(file_matrix_B);
@@ -121,11 +131,11 @@ int main(int argc, char* argv[]) {
     free(matrixA);
     free(matrixB);
     free(matrixC);
-
+    
     // Getting time of program execution stop
     gettimeofday(&stop_program, NULL); 
 
-    //printf("Overall time of program: %.f msec", timedifference_msec(start_program, stop_program));
+    printf("Overall time of program: %.f msec\n\n", timedifference_msec(start_program, stop_program));
 
     return 0;
 }
@@ -137,9 +147,14 @@ int main(int argc, char* argv[]) {
 struct matrix* inicialize_matrix(unsigned long int width, unsigned long int height, int alloc_mode) {
 
     struct matrix* matrix = (struct matrix*)malloc(sizeof(struct matrix));
+    if (!matrix) {
+        perror("Could not allocate matrix struct on CPU\n");
+        exit(-10);
+    }
+
     matrix->h_rows = (float*)malloc(width * height * sizeof(float));
     if (!matrix->h_rows) {
-        perror("Could not allocate matrix A or B on CPU\n");
+        perror("Could not allocate rows of matrix A or B on CPU\n");
         exit(1);
     }
 
@@ -150,12 +165,12 @@ struct matrix* inicialize_matrix(unsigned long int width, unsigned long int heig
         cudaMalloc(&(matrix->d_rows), width * height * sizeof(float));
     }
 
-    /*
+
     if (cudaError != cudaSuccess) {
         perror("Could not allocate matrix A or B on GPU device\n");
         exit(4);
     }
-    */
+
 
     matrix->width = width;
     matrix->height = height;
@@ -184,6 +199,11 @@ int load_matrix(struct matrix* matrix, FILE* file) {
 struct matrix* inicialize_empty_matrix(unsigned long int width, unsigned long int height, int alloc_mode) {
 
     struct matrix* matrix = (struct matrix*)malloc(sizeof(struct matrix));
+     if (!matrix) {
+        perror("Could not allocate matrix C struct on CPU\n");
+        exit(-12);
+    }
+
     matrix->h_rows = (float*)malloc(width * height * sizeof(float));
     if (!matrix->h_rows) {
         perror("Could not allocate matrix C on CPU\n");
@@ -197,19 +217,20 @@ struct matrix* inicialize_empty_matrix(unsigned long int width, unsigned long in
         cudaMalloc(&(matrix->d_rows), width * height * sizeof(float));
     }
 
-    /*
     if (cudaError != cudaSuccess) {
         perror("Could not allocate matrix C on GPU device\n");
         exit(4);
     }
-    */
 
     matrix->width = width;
     matrix->height = height;
     matrix->alloc_mode = alloc_mode;
+
+    
     for (int i = 0; i < width * height; i++) { 
         matrix->h_rows[i] = 0;
     }
+    
 
     return matrix;
 } 
@@ -218,6 +239,6 @@ struct matrix* inicialize_empty_matrix(unsigned long int width, unsigned long in
 int display_matrix(struct matrix* matrix) {
 
     for (int i = 0; i < MAX_DISPLAY; i++) printf("%.f ", matrix->h_rows[i]);
-    printf("\n\n\n");
+    printf("\n\n");
     return 1;
 }

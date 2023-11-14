@@ -13,8 +13,8 @@ struct matrix {
     int alloc_mode;
 };
 
+static cudaError_t cudaError;
 
-void set_device_size(int device_size);
 
 int is_matrix_valid(struct matrix* matrix);
 
